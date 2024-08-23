@@ -12,5 +12,6 @@ class UserSerializer(serializers.ModelSerializer):
         return user
     
 class ProductsSerializers(serializers.ModelSerializer):
-      model=Products
-      fields="__all__"
+      class Meta:      
+          model=Products
+          fields="__all__"

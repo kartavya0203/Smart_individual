@@ -14,7 +14,8 @@ class CreateViewset(generics.CreateAPIView):
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Products.objects.all()
-    serializer_class =ProductsSerializers
+    serializer_class = ProductsSerializers
+    permission_classes = [AllowAny]  # Temporarily allow any request to see if this resolves the issue
 
 
 
