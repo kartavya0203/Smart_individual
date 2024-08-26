@@ -1,11 +1,10 @@
 from django.shortcuts import redirect
 from django.views import View
-import pandas as pd
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.shortcuts import render
-from .serializers import ProductsSerializers, UserSerializer
-from .models import Products
+from .serializers import *
+from .models import *
 from rest_framework import viewsets, generics,status
 from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -37,11 +36,34 @@ class CreateViewset(generics.CreateAPIView):
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Products.objects.all()
     serializer_class = ProductsSerializers
-    permission_classes = [AllowAny]  # Temporarily allow any request to see if this resolves the issue
-
-class HomePageView(View):
-    def get(self, request):
-        return redirect('')
+    permission_classes = [AllowAny] 
 
 
+class CartViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    serializer_class = CartSerializer
 
+    def get_queryset(self):
+        return Cart.objects.filter(user=self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        cart, created = Cart.objects.get_or_create(user=request.user)
+        product = Products.objects.get(id=request.data['product_id'])
+        quantity = request.data.get('quantity')
+        
+        cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
+        if not created:
+            cart_item.quantity +=  int(quantity)
+        cart_item.save()
+
+        return Response(CartSerializer(cart).data, status=status.HTTP_200_OK)
+
+    def destroy(self, request, *args, **kwargs):
+        cart = Cart.objects.get(user=self.request.user)
+        cart_item = CartItem.objects.get(cart=cart, id=kwargs['pk'])
+        cart_item.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def list(self, request, *args, **kwargs):
+        cart = Cart.objects.get(user=request.user)
+        return Response(CartSerializer(cart).data)

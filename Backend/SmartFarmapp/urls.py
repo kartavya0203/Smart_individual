@@ -1,9 +1,9 @@
 from django.urls import path,include
 from rest_framework import routers
-from .views import ProductViewSet,RandomForestPrediction
+from .views import *
 router=routers.DefaultRouter()
-router.register(r'product',ProductViewSet)
-
+router.register(r'product',ProductViewSet,basename="product")
+router.register(r'cartview',CartViewSet,basename='cart')
 
 urlpatterns = [
     path('',include(router.urls)),
