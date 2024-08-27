@@ -63,7 +63,25 @@ class CartViewSet(viewsets.ModelViewSet):
         cart_item = CartItem.objects.get(cart=cart, id=kwargs['pk'])
         cart_item.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    def partial_update(self, request, *args, **kwargs):
+        cart_item = CartItem.objects.get(cart__user=request.user, id=kwargs['pk'])
+        quantity = request.data.get('quantity')
+        
+        if quantity is not None:
+            cart_item.quantity = max(cart_item.quantity + int(quantity), 0)  # Prevent negative quantity
+            if cart_item.quantity == 0:
+                cart_item.delete()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            cart_item.save()
+        
+        return Response(CartItemSerializer(cart_item).data, status=status.HTTP_200_OK)
 
     def list(self, request, *args, **kwargs):
         cart = Cart.objects.get(user=request.user)
-        return Response(CartSerializer(cart).data)
+        cart_data=CartSerializer(cart).data
+
+        total_cost=sum(float(item['product_price'])*item['quantity'] for item in cart_data['items'])
+
+        cart_data['total_cost']=total_cost
+        return Response(cart_data)
