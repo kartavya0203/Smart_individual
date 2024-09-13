@@ -9,7 +9,8 @@ from rest_framework import viewsets, generics,status
 from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .ml_models import predict
-
+# import razorpay
+from django.conf import settings
 #model_loader = predict()
 
 class RandomForestPrediction(APIView):
@@ -82,6 +83,12 @@ class CartViewSet(viewsets.ModelViewSet):
         cart_data=CartSerializer(cart).data
 
         total_cost=sum(float(item['product_price'])*item['quantity'] for item in cart_data['items'])
+        total_cost_paisa=int(total_cost*100)
 
         cart_data['total_cost']=total_cost
+        # client = razorpay.Client(auth=(settings.RAZORPAY_API_KEY, settings.RAZORPAY_API_SECRET))
+        
+
+
         return Response(cart_data)
+    
