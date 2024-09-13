@@ -57,11 +57,19 @@ const ProductCard = ({ productData }) => {
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:scale-105 hover:shadow-xl">
-      <img src={productData.image} alt={productData.name} className="w-full h-48 object-cover" />
+      <img
+        src={productData.image}
+        alt={productData.product_name}
+        className="w-full h-48 object-cover"
+      />
       <div className="p-4">
-        <h2 className="text-xl font-semibold text-gray-800 mb-2">{productData.name}</h2>
-        <p className="text-gray-600 mb-3">{productData.description}</p>
-        <p className="text-lg font-bold text-gray-800 mb-4">₹{productData.price}</p>
+        <h2 className="text-xl font-semibold text-gray-800 mb-2">
+          {productData.product_name}
+        </h2>
+        <p className="text-gray-600 mb-3">{productData.product_description}</p>
+        <p className="text-lg font-bold text-gray-800 mb-4">
+          ₹{productData.price}
+        </p>
         <div className="flex justify-between">
           <button
             className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-300"

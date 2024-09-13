@@ -47,6 +47,7 @@ const Shop = () => {
       }
       const data = await response.json();
       setProducts(data); // Update state with fetched data
+      console.log(data)
     } catch (error) {
       console.error("There was a problem with the fetch operation:", error);
     }
