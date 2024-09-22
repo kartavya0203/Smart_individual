@@ -1,61 +1,122 @@
-// import Footer from "./Footer";
-// import Header from "./Header";
-
-// export const YieldAnalysis = () => {
-//   return (
-//     <div>
-//       <Header />
-//       YieldAnalysis
-//       <Footer />
-//     </div>
-//   );
-// };
-
 import Footer from "./Footer";
 import Header from "./Header";
 
 export const YieldAnalysis = () => {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gradient-to-r from-blue-100 to-green-100">
       <Header />
       <main className="flex-grow container mx-auto px-4 py-16">
-        <h1 className="text-4xl font-bold mb-8 text-center">Yield Analysis</h1>
-        <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-8">
+        <h1 className="text-5xl font-bold mb-8 text-center text-gray-800">Yield Analysis</h1>
+        <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-8 ring-1 ring-gray-200">
           <form>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Nitrogen */}
               <div>
-                <label htmlFor="crop" className="block text-gray-700 text-sm font-bold mb-2">Crop Type</label>
-                <select id="crop" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500">
-                  <option>Select a crop</option>
-                  <option>Wheat</option>
-                  <option>Corn</option>
-                  <option>Soybeans</option>
-                </select>
+                <label htmlFor="nitrogen" className="block text-gray-700 text-sm font-semibold mb-2">
+                  Nitrogen (N) <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  id="nitrogen"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-200"
+                  placeholder="Enter nitrogen level"
+                  required
+                />
               </div>
+
+              {/* Potassium */}
               <div>
-                <label htmlFor="area" className="block text-gray-700 text-sm font-bold mb-2">Field Area (acres)</label>
-                <input type="number" id="area" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" />
+                <label htmlFor="potassium" className="block text-gray-700 text-sm font-semibold mb-2">
+                  Potassium (K) <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  id="potassium"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-200"
+                  placeholder="Enter potassium level"
+                  required
+                />
               </div>
+
+              {/* Phosphorus */}
               <div>
-                <label htmlFor="soil" className="block text-gray-700 text-sm font-bold mb-2">Soil Type</label>
-                <select id="soil" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500">
-                  <option>Select soil type</option>
-                  <option>Clay</option>
-                  <option>Sandy</option>
-                  <option>Loam</option>
-                </select>
+                <label htmlFor="phosphorus" className="block text-gray-700 text-sm font-semibold mb-2">
+                  Phosphorus (P) <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  id="phosphorus"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-200"
+                  placeholder="Enter phosphorus level"
+                  required
+                />
               </div>
+
+              {/* Temperature */}
               <div>
-                <label htmlFor="irrigation" className="block text-gray-700 text-sm font-bold mb-2">Irrigation Method</label>
-                <select id="irrigation" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500">
-                  <option>Select irrigation method</option>
-                  <option>Drip</option>
-                  <option>Sprinkler</option>
-                  <option>Flood</option>
-                </select>
+                <label htmlFor="temperature" className="block text-gray-700 text-sm font-semibold mb-2">
+                  Temperature (°C) <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  step="0.1"
+                  id="temperature"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-200"
+                  placeholder="Enter temperature"
+                  required
+                />
+              </div>
+
+              {/* Humidity */}
+              <div>
+                <label htmlFor="humidity" className="block text-gray-700 text-sm font-semibold mb-2">
+                  Humidity (%) <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  step="0.1"
+                  id="humidity"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-200"
+                  placeholder="Enter humidity level"
+                  required
+                />
+              </div>
+
+              {/* Rainfall */}
+              <div>
+                <label htmlFor="rainfall" className="block text-gray-700 text-sm font-semibold mb-2">
+                  Rainfall (mm) <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  step="0.1"
+                  id="rainfall"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-200"
+                  placeholder="Enter rainfall amount"
+                  required
+                />
+              </div>
+
+              {/* pH */}
+              <div>
+                <label htmlFor="ph" className="block text-gray-700 text-sm font-semibold mb-2">
+                  pH <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  step="0.1"
+                  id="ph"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-200"
+                  placeholder="Enter pH level"
+                  required
+                />
               </div>
             </div>
-            <button type="submit" className="mt-8 w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition-colors duration-300">
+
+            <button
+              type="submit"
+              className="mt-8 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg shadow-md transition duration-200"
+            >
               Analyze Yield
             </button>
           </form>

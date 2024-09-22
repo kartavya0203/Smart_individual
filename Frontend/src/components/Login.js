@@ -73,53 +73,58 @@ const SignUp = () => {
       });
   };
   return (
-    <div>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-        }}
-        className="w-3/12 absolute p-10 border-2 flex flex-col gap-y-5 my-44 mx-auto right-0 left-0 justify-center"
+    <div className="min-h-screen flex justify-center items-center bg-cover bg-center bg-no-repeat">
+  <form
+    onSubmit={(e) => {
+      e.preventDefault();
+    }}
+    className="w-3/12 p-10 border-2 border-green-400 rounded-lg shadow-lg flex flex-col gap-y-5 bg-white"
+  >
+    <h2 className="text-center text-3xl font-bold text-green-600 mb-5">
+      {isSignIn ? "Sign In" : "Sign Up"}
+    </h2>
+
+    {!isSignIn && (
+      <input
+        type="text"
+        ref={username}
+        placeholder="Enter username"
+        className="p-3 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200"
+      />
+    )}
+    <input
+      type="text"
+      ref={email}
+      placeholder="Enter Email"
+      className="p-3 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200"
+    />
+    <input
+      type="password"
+      ref={password}
+      placeholder="Enter Password"
+      className="p-3 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200"
+    />
+
+    <button
+      onClick={handleSubmit}
+      className="bg-green-500 mx-auto w-32 p-2 rounded-lg text-white hover:bg-green-600 transition duration-200"
+    >
+      {isSignIn ? "Sign In" : "Sign Up"}
+    </button>
+
+    <div className="flex gap-2 text-gray-700">
+      {isSignIn ? <p>New User?</p> : <p>Already Registered?</p>}
+      <div
+        onClick={toggleSignIn}
+        className="hover:underline cursor-pointer text-green-500"
       >
-        {!isSignIn && (
-          <input
-            type="text"
-            ref={username}
-            placeholder="Enter username"
-            className="p-2 bg-gray-200"
-          />
-        )}
-        <input
-          type="text"
-          ref={email}
-          placeholder="Enter Email"
-          className="p-2 bg-gray-200"
-        />
-        <input
-          type="password"
-          ref={password}
-          placeholder="Enter Password"
-          className="p-2 bg-gray-200"
-        />
-
-        <button
-          onClick={handleSubmit}
-          className="bg-blue-500 mx-auto w-32 p-2 rounded-lg text-white"
-        >
-          {isSignIn ? "Sign In" : "Sign Up"}
-        </button>
-
-        <div className="flex gap-2">
-          {isSignIn ? <p>New User?</p> : <p>Already Registered?</p>}
-
-          <div
-            onClick={toggleSignIn}
-            className="hover:underline cursor-pointer"
-          >
-            {isSignIn ? "Sign Up now" : "Sign In now"}
-          </div>
-        </div>
-      </form>
+        {isSignIn ? "Sign Up now" : "Sign In now"}
+      </div>
     </div>
+  </form>
+</div>
+
+  
   );
 };
 
