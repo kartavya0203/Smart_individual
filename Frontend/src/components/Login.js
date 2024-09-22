@@ -1,12 +1,14 @@
 import React, { useRef, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import addUser from "../redux/userSlice";
+import axios from "axios";
 
 const SignUp = () => {
-  const [isSignIn, setIsSignIn] = useState(true);
+  const signIn = useSelector((store) => store.user.isSignIn);
+  const [isSignIn, setIsSignIn] = useState(signIn);
   const [credentials, setCredentials] = useState();
-  const name = useRef();
+  const username = useRef();
   const email = useRef();
   const password = useRef();
   const navigate = useNavigate();
@@ -21,42 +23,54 @@ const SignUp = () => {
       setCredentials({
         email: email.current.value,
         password: password.current.value,
-        role: role,
       });
     } else {
       setCredentials({
-        name: name.current.value,
+        username: username.current.value,
         email: email.current.value,
         password: password.current.value,
-        role: role,
       });
     }
-    try {
-      const response = await fetch("http://127.0.0.1:8000/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(credentials),
+
+    await axios
+      .post(
+        `http://127.0.0.1:8000/api/${isSignIn ? "login" : "user/register"}/`,
+
+        isSignIn
+          ? { email: email.current.value, password: password.current.value }
+          : {
+              username: username.current.value,
+              email: email.current.value,
+              password: password.current.value,
+            }
+      )
+      .then(async (response) => {
+        if (isSignIn) {
+          localStorage.setItem("auth_token", response.data.token);
+          navigate("/");
+        } else {
+          await axios
+            .post(
+              `http://127.0.0.1:8000/api/login/`,
+
+              {
+                email: email.current.value,
+                password: password.current.value,
+              }
+            )
+            .then((response) => {
+              localStorage.setItem("auth_token", response.data.token);
+              addUser(true);
+              navigate("/");
+            })
+            .catch((error) => {
+              console.error(error);
+            });
+        }
+      })
+      .catch((error) => {
+        console.error(error);
       });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        localStorage.setItem("access_token", data.tokens.access);
-        dispatch(addUser(credentials));
-        navigate("/");
-      } else {
-        alert(data.message);
-
-        // Handle login error
-        console.error("Login failed");
-        // You might want to show an error message to the user
-      }
-    } catch (error) {
-      console.error("Login error:", error);
-      // Handle network errors
-    }
   };
   return (
     <div>
@@ -69,8 +83,8 @@ const SignUp = () => {
         {!isSignIn && (
           <input
             type="text"
-            ref={name}
-            placeholder="Enter Name"
+            ref={username}
+            placeholder="Enter username"
             className="p-2 bg-gray-200"
           />
         )}
@@ -86,20 +100,14 @@ const SignUp = () => {
           placeholder="Enter Password"
           className="p-2 bg-gray-200"
         />
-        <div className="flex gap-x-2">
-          <button
-            onClick={() => handleSubmit("Farmer")}
-            className="bg-blue-500 mx-auto w-32 p-2 rounded-lg text-white"
-          >
-            {isSignIn ? "Sign In as Farmer" : "Sign Up as Farmer"}
-          </button>
-          <button
-            onClick={() => handleSubmit("Customer")}
-            className="bg-blue-500 mx-auto w-32 p-2 rounded-lg text-white"
-          >
-            {isSignIn ? "Sign In as Customer" : "Sign Up as Customer"}
-          </button>
-        </div>
+
+        <button
+          onClick={handleSubmit}
+          className="bg-blue-500 mx-auto w-32 p-2 rounded-lg text-white"
+        >
+          {isSignIn ? "Sign In" : "Sign Up"}
+        </button>
+
         <div className="flex gap-2">
           {isSignIn ? <p>New User?</p> : <p>Already Registered?</p>}
 

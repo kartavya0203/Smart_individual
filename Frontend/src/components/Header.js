@@ -1,12 +1,21 @@
-import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
-import { removeUser } from "../redux/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { removeUser, setIsSignIn } from "../redux/userSlice";
 import logo from "../assest/logo.png";
+import { useState } from "react";
 const Header = () => {
   const dispatch = useDispatch();
   const handleSignOut = () => {
-    localStorage.removeItem("access_token");
-    dispatch(removeUser());
+    localStorage.removeItem("auth_token");
+    setUser(false);
+    // dispatch(removeUser());
+  };
+  // const user = useSelector((store) => store.user.user);
+  const [user, setUser] = useState(localStorage.getItem("auth_token"));
+  const navigate = useNavigate();
+  const goToLogin = (isSignIn) => {
+    dispatch(setIsSignIn(isSignIn));
+    navigate("/login");
   };
   return (
     <div className="w-full flex justify-between items-center p-6 bg-gradient-to-b from-black absolute z-10">
@@ -49,14 +58,35 @@ const Header = () => {
               Cart
             </Link>
           </li>
-          <li>
-            <button
-              onClick={handleSignOut}
-              className="text-xl font-bold text-white hover:underline"
-            >
-              Sign Out
-            </button>
-          </li>
+          {user ? (
+            <li>
+              <button
+                onClick={handleSignOut}
+                className="text-xl font-bold text-white hover:underline"
+              >
+                Sign Out
+              </button>
+            </li>
+          ) : (
+            <>
+              <li>
+                <button
+                  className="text-xl font-bold text-white hover:underline"
+                  onClick={() => goToLogin(true)}
+                >
+                  Login
+                </button>
+              </li>
+              <li>
+                <button
+                  className="text-xl font-bold text-white hover:underline"
+                  onClick={() => goToLogin(false)}
+                >
+                  Signup
+                </button>
+              </li>
+            </>
+          )}
         </ul>
       </div>
     </div>

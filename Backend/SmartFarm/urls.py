@@ -26,7 +26,7 @@ from django.http import HttpResponseRedirect
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/user/register/',CreateViewset.as_view(),name='register'),
-    path('api/login',LoginView.as_view(),name='login'),
+    path('api/login/',LoginView.as_view(),name='login'),
     path('api/token/',TokenObtainPairView.as_view(),name='get_token'),
     path('api/token/refresh/',TokenRefreshView.as_view(),name='refresh_token'),
     # path('api-auth/',include('rest_framework.urls')),
