@@ -12,6 +12,7 @@ def predict(input_data):
     """
     This function accepts input data in the form of a dictionary
     and returns the predicted crop name.
+    
     """
     # Extract the input features in the required order
     input_features = [
