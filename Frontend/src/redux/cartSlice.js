@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios"; // Assuming you're using axios for API calls
 
 // API base URL
-const API_BASE_URL = "http://localhost:8000/api/v1/cartview";
+const API_BASE_URL = "http://localhost:8000/api/v1/cartview/";
 
 // Async thunks for API calls
 export const fetchCart = createAsyncThunk("cart/fetchCart", async () => {

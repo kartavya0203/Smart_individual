@@ -30,3 +30,11 @@ class CartItem(models.Model):
 
     def __str__(self):
         return f"{self.quantity} of {self.product.product_name} in cart"
+
+class Contact(models.Model):
+    name=models.CharField(max_length=100)
+    email=models.EmailField(max_length=100)
+    message=models.TextField(max_length=100)
+
+    def __str__(self):
+        return f"{self.name}"
