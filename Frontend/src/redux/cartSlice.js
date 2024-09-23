@@ -100,18 +100,24 @@ const cartSlice = createSlice({
         state.error = action.payload;
         console.error("Failed to fetch cart:", action.payload);
       })
-      .addCase(addToCart.pending, (state) => {
+      .addCase(addToCart.pending, (state, action) => {
         state.status = "loading";
+        // Optimistically add the item
+        state.items.push(action.meta.arg);
       })
       .addCase(addToCart.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.items = action.payload;
+        // Replace the optimistic item with the server response
+        const index = state.items.findIndex(item => item.id === action.payload.id);
+        if (index !== -1) {
+          state.items[index] = action.payload;
+        }
         console.log("Item added to cart successfully:", action.payload);
       })
       .addCase(addToCart.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.payload;
-        console.error("Failed to add item to cart:", action.payload);
+        state.error = action.error.message;
+        console.error("Failed to add item to cart:", action.error);
       })
       .addCase(removeFromCart.pending, (state) => {
         state.status = "loading";
