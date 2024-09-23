@@ -8,7 +8,7 @@ const ProductCard = ({ productData }) => {
   const addItem = () => {
     dispatch(addToCart({
       id: productData.id,
-      quantity: 1, // You can adjust this if you want to allow quantity selection
+      quantity: 1,
     }));
   };
 
