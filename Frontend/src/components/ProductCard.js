@@ -5,11 +5,8 @@ import { addToCart } from "../redux/cartSlice";
 const ProductCard = ({ productData }) => {
   const dispatch = useDispatch();
 
-  const addItem = () => {
-    dispatch(addToCart({
-      id: productData.id,
-      quantity: 1,
-    }));
+  const handleAddToCart = () => {
+    dispatch(addToCart({ id: productData.id, quantity: 1 }));
   };
 
   return (
@@ -35,7 +32,7 @@ const ProductCard = ({ productData }) => {
             Purchase
           </button>
           <button
-            onClick={addItem}
+            onClick={handleAddToCart}
             className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg flex items-center transition-colors duration-300"
           >
             <span className="mr-2">Add to Cart</span>
