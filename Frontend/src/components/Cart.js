@@ -24,12 +24,15 @@ const Cart = () => {
   if (status === 'loading') return <div>Loading...</div>;
   if (status === 'failed') return <div>Error: {error}</div>;
 
+  // Check if cartItems is an array and has items
+  const hasItems = Array.isArray(cartItems) && cartItems.length > 0;
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-grow container mx-auto px-4 py-16">
         <h1 className="text-3xl font-bold mb-8">Your Cart</h1>
-        {cartItems.length === 0 ? (
+        {!hasItems ? (
           <p className="text-xl text-gray-600">Your cart is empty.</p>
         ) : (
           <>
