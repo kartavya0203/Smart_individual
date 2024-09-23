@@ -46,14 +46,21 @@
 
 import React from "react";
 import { useDispatch } from "react-redux";
-import { addToCart } from "../redux/cartSlice";
+import { addToCart, fetchCart } from "../redux/cartSlice";
 
 const ProductCard = ({ productData }) => {
   const dispatch = useDispatch();
 
-  const addItem = (productData) => {
-    dispatch(addToCart(productData));
+  const addItem = async () => {
+    const item = {
+      product_id: productData.id,  // Assuming `id` is the field used by your backend
+      quantity: 1,  // Adjust based on user input or defaults
+    };
+    //dispatch(addToCart(item));
+    dispatch(addToCart(productData)); // Add item to cart
+    //dispatch(fetchCart()); 
   };
+  
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:scale-105 hover:shadow-xl">

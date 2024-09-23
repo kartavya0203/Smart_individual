@@ -35,6 +35,13 @@ class CartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cart
         fields = ['id', 'user', 'items', 'created_at']
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        if request.user.is_authenticated:
+            validated_data['user'] = request.user
+        return super().create(validated_data)
+
         
 class ContactSerializer(serializers.ModelSerializer):
     class Meta:

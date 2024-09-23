@@ -41,13 +41,29 @@
 
 import { useDispatch, useSelector } from "react-redux";
 import ProductCard from "./ProductCard";
-import { clearCart, removeFromCart } from "../redux/cartSlice";
+import { clearCart, fetchCart, removeFromCart } from "../redux/cartSlice";
 import Header from "./Header";
 import Footer from "./Footer";
+import { useEffect, useState } from "react";
 
 const Cart = () => {
-  const cartItems = useSelector((store) => store.cart.cart);
   const dispatch = useDispatch();
+  //dispatch(fetchCart())
+  
+
+  useEffect(() => {
+
+    dispatch(fetchCart()); // Fetch cart data on mount
+  }, [dispatch])
+
+  const cartItems = useSelector((store) => store.cart.cart);
+  // const {items}=cart
+  // const [cartItems,setCartItems]=useState([])
+  // setCartItems(items)
+  // console.log(items)
+   if(!cartItems)return 
+ 
+  
 
   const handleClearCart = () => {
     dispatch(clearCart());
@@ -62,12 +78,12 @@ const Cart = () => {
       <Header />
       <main className="flex-grow container mx-auto px-4 py-16">
         <h1 className="text-3xl font-bold mb-8">Your Cart</h1>
-        {cartItems.length === 0 ? (
+        {cartItems? (
           <p className="text-xl text-gray-600">Your cart is empty.</p>
         ) : (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {cartItems.map((cartItem) => (
+              {cartItems.map((cartItem) => ( 
                 <div key={cartItem.id} className="relative">
                   <ProductCard productData={cartItem} cartState={false} />
                   <button
