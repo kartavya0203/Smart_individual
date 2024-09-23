@@ -56,7 +56,7 @@ class CartViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            return Cart.objects.filter(user=self.request.user)
+            return Cart.objects.filter(user=self.request.user).prefetch_related('items__product')
         return None  # Unauthenticated users don't have a database-stored cart
 
     def create(self, request, *args, **kwargs):
@@ -67,7 +67,7 @@ class CartViewSet(viewsets.ModelViewSet):
             quantity = request.data.get('quantity', 1)  # Default quantity to 1 if not provided
             
             cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
-            cart_item.quantity = cart_item.quantity + int(quantity) if not created else int(quantity)
+            cart_item.quantity += int(quantity) if not created else int(quantity)
             cart_item.save()
 
             return Response(CartSerializer(cart).data, status=status.HTTP_200_OK)
@@ -129,10 +129,11 @@ class CartViewSet(viewsets.ModelViewSet):
             try:
                 cart_item = CartItem.objects.get(cart__user=request.user, id=kwargs['pk'])
                 if quantity is not None:
-                    cart_item.quantity = max(cart_item.quantity + int(quantity), 0)
-                    if cart_item.quantity == 0:
+                    new_quantity = max(cart_item.quantity + int(quantity), 0)
+                    if new_quantity == 0:
                         cart_item.delete()
                         return Response(status=status.HTTP_204_NO_CONTENT)
+                    cart_item.quantity = new_quantity
                     cart_item.save()
                 return Response(CartItemSerializer(cart_item).data, status=status.HTTP_200_OK)
             except (CartItem.DoesNotExist, Cart.DoesNotExist):
@@ -145,13 +146,14 @@ class CartViewSet(viewsets.ModelViewSet):
             # Update the session cart item quantity
             for item in session_cart:
                 if item['product_id'] == product_id:
-                    item['quantity'] = max(item['quantity'] + int(quantity), 0)
-                    if item['quantity'] == 0:
+                    new_quantity = max(item['quantity'] + int(quantity), 0)
+                    if new_quantity == 0:
                         session_cart.remove(item)
+                    else:
+                        item['quantity'] = new_quantity
                     break
             request.session['cart'] = session_cart  # Save the updated cart in session
             return Response({'cart': session_cart}, status=status.HTTP_200_OK)
-
 
 class ContactView(APIView):
     def post(self, request):

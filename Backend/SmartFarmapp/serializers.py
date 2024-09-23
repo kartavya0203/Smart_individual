@@ -21,13 +21,17 @@ class UserSerializer(serializers.ModelSerializer):
 class ProductsSerializers(serializers.ModelSerializer):
       class Meta:      
           model=Products
+
           fields="__all__"
 class CartItemSerializer(serializers.ModelSerializer):
-     product_name = serializers.CharField(source='product.product_name', read_only=True)
-     product_price = serializers.CharField(source='product.price', read_only=True)
-     class Meta:
+    product_name = serializers.CharField(source='product.product_name')
+    product_price = serializers.DecimalField(source='product.price', max_digits=10, decimal_places=2)
+    image = serializers.ImageField(source='product.image', read_only=True) # Ensure this is set up
+
+    class Meta:
         model = CartItem
-        fields = ['id', 'product_name','product_price','product', 'quantity', 'added_at']
+        fields = ['id', 'product_name', 'product_price', 'quantity', 'image']
+
 
 class CartSerializer(serializers.ModelSerializer):
     items = CartItemSerializer(many=True, read_only=True)
@@ -41,6 +45,7 @@ class CartSerializer(serializers.ModelSerializer):
         if request.user.is_authenticated:
             validated_data['user'] = request.user
         return super().create(validated_data)
+
 
         
 class ContactSerializer(serializers.ModelSerializer):

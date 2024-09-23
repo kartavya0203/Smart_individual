@@ -1,13 +1,12 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from "react-redux";
-import ProductCard from "./ProductCard";
 import { clearCart, fetchCart, removeFromCart } from "../redux/cartSlice";
 import Header from "./Header";
 import Footer from "./Footer";
 
 const Cart = () => {
   const dispatch = useDispatch();
-  const { items: cartItems, status, error } = useSelector((store) => store.cart);
+  const { items: cartData, status, error } = useSelector((store) => store.cart);
 
   useEffect(() => {
     dispatch(fetchCart());
@@ -21,41 +20,67 @@ const Cart = () => {
     dispatch(removeFromCart(cartItem.id));
   };
 
-  if (status === 'loading') return <div>Loading...</div>;
-  if (status === 'failed') return <div>Error: {error}</div>;
+  if (status === 'loading') return <div className="text-center">Loading your cart...</div>;
+  if (status === 'failed') return <div className="text-center text-red-500">Error: {error}</div>;
 
-  // Check if cartItems is an array and has items
-  const hasItems = Array.isArray(cartItems) && cartItems.length > 0;
+  const hasItems = Array.isArray(cartData.items) && cartData.items.length > 0;
+
+  // Calculate total cost
+  const totalCost = hasItems ? cartData.items.reduce((acc, item) => {
+    return acc + (parseFloat(item.product_price) * item.quantity);
+  }, 0) : 0;
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gray-100">
       <Header />
       <main className="flex-grow container mx-auto px-4 py-16">
-        <h1 className="text-3xl font-bold mb-8">Your Cart</h1>
+        <h1 className="text-3xl font-bold mb-8">Your Bill</h1>
         {!hasItems ? (
           <p className="text-xl text-gray-600">Your cart is empty.</p>
         ) : (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {cartItems.map((cartItem) => (
-                <div key={cartItem.id} className="relative">
-                  <ProductCard productData={cartItem} cartState={false} />
-                  <button
-                    onClick={() => deleteCartItem(cartItem)}
-                    className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-2 transition-colors duration-300"
-                  >
-                    <i className="fa-solid fa-trash"></i>
-                  </button>
-                </div>
-              ))}
-            </div>
-            <div className="mt-8 text-right">
-              <button
-                className="px-6 py-3 text-lg font-semibold bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors duration-300"
-                onClick={handleClearCart}
-              >
-                Clear Cart
-              </button>
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <table className="min-w-full">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left py-2">Product Name</th>
+                    <th className="text-left py-2">Price (₹)</th>
+                    <th className="text-left py-2">Quantity</th>
+                    <th className="text-left py-2">Total (₹)</th>
+                    <th className="text-right py-2"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {cartData.items.map((cartItem) => (
+                    <tr key={cartItem.id} className="border-b">
+                      <td className="py-2">{cartItem.product_name}</td>
+                      <td className="py-2">{cartItem.product_price}</td>
+                      <td className="py-2">{cartItem.quantity}</td>
+                      <td className="py-2">
+                        {(parseFloat(cartItem.product_price) * cartItem.quantity).toFixed(2)}
+                      </td>
+                      <td className="py-2 text-right">
+                        <button
+                          onClick={() => deleteCartItem(cartItem)}
+                          className="text-red-500 hover:text-red-600"
+                        >
+                          Remove
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <div className="mt-4 flex justify-between items-center font-semibold">
+                <h2 className="text-xl">Total Cost: <span className="text-green-600">₹{totalCost.toFixed(2)}</span></h2>
+                <button
+                  className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg"
+                  onClick={handleClearCart}
+                  aria-label="Clear all items from cart"
+                >
+                  Clear Cart
+                </button>
+              </div>
             </div>
           </>
         )}

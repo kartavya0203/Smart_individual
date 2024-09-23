@@ -1,12 +1,12 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import { addToCart, fetchCart } from "../redux/cartSlice";
+import { addToCart } from "../redux/cartSlice";
 
-const ProductCard = ({ productData }) => {
+const ProductCard = ({ productData, cartState }) => {
   const dispatch = useDispatch();
 
-  const handleAddToCart = () => {
-    dispatch(addToCart(productData)).then(() => dispatch(fetchCart()));
+  const addItem = () => {
+    dispatch(addToCart(productData));
   };
 
   return (
@@ -25,19 +25,25 @@ const ProductCard = ({ productData }) => {
           ₹{productData.price}
         </p>
         <div className="flex justify-between">
-          <button
-            className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-300"
-            onClick={() => console.log("Purchase method will come here")}
-          >
-            Purchase
-          </button>
-          <button
-            onClick={handleAddToCart}
-            className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg flex items-center transition-colors duration-300"
-          >
-            <span className="mr-2">Add to Cart</span>
-            <i className="fas fa-plus"></i>
-          </button>
+          {!cartState ? (
+            <>
+              <button
+                className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-300"
+                onClick={() => console.log("Purchase method will come here")}
+              >
+                Purchase
+              </button>
+              <button
+                onClick={addItem}
+                className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg flex items-center transition-colors duration-300"
+              >
+                <span className="mr-2">Add</span>
+                <i className="fas fa-plus"></i>
+              </button>
+            </>
+          ) : (
+            <div>In Cart</div> // Display "In Cart" if the product is in the cart
+          )}
         </div>
       </div>
     </div>
