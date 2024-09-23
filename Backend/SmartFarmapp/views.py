@@ -109,18 +109,21 @@ class CartViewSet(viewsets.ModelViewSet):
         if request.user.is_authenticated:
             try:
                 cart = Cart.objects.get(user=self.request.user)
-                cart_item = CartItem.objects.get(cart=cart, id=kwargs['pk'])
-                cart_item.delete()
-                return Response(status=status.HTTP_204_NO_CONTENT)
+                if kwargs.get('pk') == 'clear':  # Check for a 'clear' parameter
+                    cart.items.all().delete()  # Delete all items from the cart
+                    return Response(status=status.HTTP_204_NO_CONTENT)
+                else:
+                    cart_item = CartItem.objects.get(cart=cart, id=kwargs['pk'])
+                    cart_item.delete()
+                    return Response(status=status.HTTP_204_NO_CONTENT)
             except (Cart.DoesNotExist, CartItem.DoesNotExist):
                 return Response({'message': 'Cart or item not found.'}, status=status.HTTP_404_NOT_FOUND)
-
         else:
-            session_cart = request.session.get('cart', [])
-            product_id = kwargs['pk']
-            session_cart = [item for item in session_cart if item['product_id'] != product_id]
-            request.session['cart'] = session_cart  # Save the updated session cart
+        # Handle session cart clearing here if needed
+            session_cart = []
+            request.session['cart'] = session_cart
             return Response({'cart': session_cart}, status=status.HTTP_200_OK)
+
 
     def partial_update(self, request, *args, **kwargs):
         quantity = request.data.get('quantity')

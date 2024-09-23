@@ -35,6 +35,7 @@ export const addToCart = createAsyncThunk(
         },
       });
       dispatch(fetchCart()); // Refresh cart after adding item
+      toast.success(`${item.product_name} has been added to your cart!`);
       return response.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
@@ -63,7 +64,7 @@ export const clearCart = createAsyncThunk(
   "cart/clearCart",
   async (_, { dispatch, rejectWithValue }) => {
     try {
-      await axios.delete(API_BASE_URL, {
+      await axios.delete(`${API_BASE_URL}clear/`, {
         headers: {
           Authorization: `Token ${getAuthToken()}`, // Use Token for authorization
         },
