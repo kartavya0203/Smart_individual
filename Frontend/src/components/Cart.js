@@ -16,18 +16,16 @@ const Cart = () => {
     dispatch(clearCart());
   };
 
-  const deleteCartItem = (cartItem) => {
-    dispatch(removeFromCart(cartItem.id));
+  const deleteCartItem = (cartItemId) => {
+    dispatch(removeFromCart(cartItemId));
   };
 
   if (status === 'loading') return <div className="text-center">Loading your cart...</div>;
   if (status === 'failed') return <div className="text-center text-red-500">Error: {error}</div>;
 
-  // Check if cartData is available and structured correctly
-  const hasItems = Array.isArray(cartData) && cartData.length > 0;
+  const hasItems = cartData && Array.isArray(cartData.items) && cartData.items.length > 0;
 
-  // Calculate total cost
-  const totalCost = hasItems ? cartData.reduce((acc, item) => {
+  const totalCost = hasItems ? cartData.items.reduce((acc, item) => {
     return acc + (parseFloat(item.product_price) * item.quantity);
   }, 0) : 0;
 
@@ -51,17 +49,17 @@ const Cart = () => {
                 </tr>
               </thead>
               <tbody>
-                {cartData.map((cartItem) => (
+                {cartData.items.map((cartItem) => (
                   <tr key={cartItem.id} className="border-b">
                     <td className="py-2">{cartItem.product_name}</td>
-                    <td className="py-2">{cartItem.product_price}</td>
+                    <td className="py-2">{parseFloat(cartItem.product_price).toFixed(2)}</td>
                     <td className="py-2">{cartItem.quantity}</td>
                     <td className="py-2">
                       {(parseFloat(cartItem.product_price) * cartItem.quantity).toFixed(2)}
                     </td>
                     <td className="py-2 text-right">
                       <button
-                        onClick={() => deleteCartItem(cartItem)}
+                        onClick={() => deleteCartItem(cartItem.id)}
                         className="text-red-500 hover:text-red-600"
                       >
                         Remove

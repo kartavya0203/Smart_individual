@@ -22,6 +22,17 @@ export const YieldAnalysis = () => {
 
   const handleSubmit=async(e)=>{
        e.preventDefault();
+
+      //  const convertedData = {
+      //   nitrogen: parseFloat(formData.nitrogen),
+      //   potassium: parseFloat(formData.potassium),
+      //   phosphorus: parseFloat(formData.phosphorus),
+      //   temperature: parseFloat(formData.temperature),
+      //   humidity: parseFloat(formData.humidity),
+      //   rainfall: parseFloat(formData.rainfall),
+      //   ph: parseFloat(formData.ph),
+      // };
+
        try{
         const response = await axios.post('http://127.0.0.1:8000/api/v1/predict/',formData);
         setPrediction(response.data);
@@ -47,6 +58,7 @@ export const YieldAnalysis = () => {
             <input
               type="number"
               id="nitrogen"
+              step="0.001"
               className="w-full px-4 py-2 border border-green-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 transition duration-200"
               placeholder="Enter nitrogen level"
               onChange={handleInputChange}
@@ -62,6 +74,7 @@ export const YieldAnalysis = () => {
             <input
               type="number"
               id="potassium"
+              step="0.001"
               className="w-full px-4 py-2 border border-green-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 transition duration-200"
               placeholder="Enter potassium level"
               onChange={handleInputChange}
@@ -77,6 +90,7 @@ export const YieldAnalysis = () => {
             <input
               type="number"
               id="phosphorus"
+               step="0.001"
               className="w-full px-4 py-2 border border-green-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 transition duration-200"
               placeholder="Enter phosphorus level"
               onChange={handleInputChange}
@@ -91,7 +105,7 @@ export const YieldAnalysis = () => {
             </label>
             <input
               type="number"
-              step="0.1"
+              step="0.001"
               id="temperature"
               className="w-full px-4 py-2 border border-green-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 transition duration-200"
               placeholder="Enter temperature"
@@ -107,7 +121,7 @@ export const YieldAnalysis = () => {
             </label>
             <input
               type="number"
-              step="0.1"
+               step="0.001"
               id="humidity"
               className="w-full px-4 py-2 border border-green-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 transition duration-200"
               placeholder="Enter humidity level"
@@ -123,7 +137,7 @@ export const YieldAnalysis = () => {
             </label>
             <input
               type="number"
-              step="0.1"
+               step="0.001"
               id="rainfall"
               className="w-full px-4 py-2 border border-green-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 transition duration-200"
               placeholder="Enter rainfall amount"
@@ -139,7 +153,7 @@ export const YieldAnalysis = () => {
             </label>
             <input
               type="number"
-              step="0.1"
+              step="0.001"
               id="ph"
               className="w-full px-4 py-2 border border-green-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 transition duration-200"
               placeholder="Enter pH level"
