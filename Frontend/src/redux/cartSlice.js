@@ -9,24 +9,27 @@ export const fetchCart = createAsyncThunk("cart/fetchCart", async () => {
 });
 
 export const addToCart = createAsyncThunk("cart/addToCart", async (item) => {
-  const response = await axios.post(API_BASE_URL, {product_id:item.id,product_quantity:item.quantity});
-  return response.data.items;
+  const response = await axios.post(API_BASE_URL, {
+    product_id: item.id,
+    product_quantity: item.quantity || 1,
+  });
+  return response.data;
 });
 
 export const removeFromCart = createAsyncThunk("cart/removeFromCart", async (id) => {
-  await axios.delete(`${API_BASE_URL}${id}/`);  // Ensure correct URL format
-  return id;  // Return the ID for filtering
+  await axios.delete(`${API_BASE_URL}${id}/`);
+  return id;
 });
 
 export const clearCart = createAsyncThunk("cart/clearCart", async () => {
-  await axios.delete(API_BASE_URL);  // Clear the entire cart
-  return [];  // Return an empty array
+  await axios.delete(API_BASE_URL);
+  return [];
 });
 
 const cartSlice = createSlice({
   name: "cart",
   initialState: {
-    cart: [],
+    items: [],
     status: "idle",
     error: null,
   },
@@ -38,28 +41,28 @@ const cartSlice = createSlice({
       })
       .addCase(fetchCart.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.cart = action.payload;
+        state.items = action.payload;
       })
       .addCase(fetchCart.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
       })
       .addCase(addToCart.pending, (state) => {
-        state.status = "loading";  // Optional: Add loading state
+        state.status = "loading";
       })
       .addCase(addToCart.fulfilled, (state, action) => {
-        state.cart.push(action.payload);
         state.status = "succeeded";
+        state.items = action.payload;
       })
       .addCase(addToCart.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.error.message;  // Handle error
+        state.error = action.error.message;
       })
       .addCase(removeFromCart.fulfilled, (state, action) => {
-        state.cart = state.cart.filter((item) => item.id !== action.payload);  // Use item ID for comparison
+        state.items = state.items.filter((item) => item.id !== action.payload);
       })
       .addCase(clearCart.fulfilled, (state) => {
-        state.cart = [];
+        state.items = [];
       });
   },
 });
