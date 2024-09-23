@@ -64,7 +64,7 @@ class CartViewSet(viewsets.ModelViewSet):
         if request.user.is_authenticated:
             cart, created = Cart.objects.get_or_create(user=request.user)
             product = Products.objects.get(id=request.data['product_id'])
-            quantity = request.data.get('quantity', 1)  # Default quantity to 1 if not provided
+            quantity = request.data.get('quantity',1)  # Default quantity to 1 if not provided
             
             cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
             cart_item.quantity += int(quantity) if not created else int(quantity)
@@ -86,6 +86,7 @@ class CartViewSet(viewsets.ModelViewSet):
                 session_cart.append({
                     'product_id': product.id,
                     'product_name': product.product_name,
+                    'product_price': product.price,
                     'quantity': int(quantity),
                 })
             request.session['cart'] = session_cart  # Save the updated cart to the session

@@ -23,10 +23,11 @@ const Cart = () => {
   if (status === 'loading') return <div className="text-center">Loading your cart...</div>;
   if (status === 'failed') return <div className="text-center text-red-500">Error: {error}</div>;
 
-  const hasItems = Array.isArray(cartData.items) && cartData.items.length > 0;
+  // Check if cartData is available and structured correctly
+  const hasItems = Array.isArray(cartData) && cartData.length > 0;
 
   // Calculate total cost
-  const totalCost = hasItems ? cartData.items.reduce((acc, item) => {
+  const totalCost = hasItems ? cartData.reduce((acc, item) => {
     return acc + (parseFloat(item.product_price) * item.quantity);
   }, 0) : 0;
 
@@ -38,51 +39,49 @@ const Cart = () => {
         {!hasItems ? (
           <p className="text-xl text-gray-600">Your cart is empty.</p>
         ) : (
-          <>
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <table className="min-w-full">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-left py-2">Product Name</th>
-                    <th className="text-left py-2">Price (₹)</th>
-                    <th className="text-left py-2">Quantity</th>
-                    <th className="text-left py-2">Total (₹)</th>
-                    <th className="text-right py-2"></th>
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <table className="min-w-full">
+              <thead>
+                <tr className="border-b">
+                  <th className="text-left py-2">Product Name</th>
+                  <th className="text-left py-2">Price (₹)</th>
+                  <th className="text-left py-2">Quantity</th>
+                  <th className="text-left py-2">Total (₹)</th>
+                  <th className="text-right py-2"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {cartData.map((cartItem) => (
+                  <tr key={cartItem.id} className="border-b">
+                    <td className="py-2">{cartItem.product_name}</td>
+                    <td className="py-2">{cartItem.product_price}</td>
+                    <td className="py-2">{cartItem.quantity}</td>
+                    <td className="py-2">
+                      {(parseFloat(cartItem.product_price) * cartItem.quantity).toFixed(2)}
+                    </td>
+                    <td className="py-2 text-right">
+                      <button
+                        onClick={() => deleteCartItem(cartItem)}
+                        className="text-red-500 hover:text-red-600"
+                      >
+                        Remove
+                      </button>
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {cartData.items.map((cartItem) => (
-                    <tr key={cartItem.id} className="border-b">
-                      <td className="py-2">{cartItem.product_name}</td>
-                      <td className="py-2">{cartItem.product_price}</td>
-                      <td className="py-2">{cartItem.quantity}</td>
-                      <td className="py-2">
-                        {(parseFloat(cartItem.product_price) * cartItem.quantity).toFixed(2)}
-                      </td>
-                      <td className="py-2 text-right">
-                        <button
-                          onClick={() => deleteCartItem(cartItem)}
-                          className="text-red-500 hover:text-red-600"
-                        >
-                          Remove
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              <div className="mt-4 flex justify-between items-center font-semibold">
-                <h2 className="text-xl">Total Cost: <span className="text-green-600">₹{totalCost.toFixed(2)}</span></h2>
-                <button
-                  className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg"
-                  onClick={handleClearCart}
-                  aria-label="Clear all items from cart"
-                >
-                  Clear Cart
-                </button>
-              </div>
+                ))}
+              </tbody>
+            </table>
+            <div className="mt-4 flex justify-between items-center font-semibold">
+              <h2 className="text-xl">Total Cost: <span className="text-green-600">₹{totalCost.toFixed(2)}</span></h2>
+              <button
+                className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg"
+                onClick={handleClearCart}
+                aria-label="Clear all items from cart"
+              >
+                Clear Cart
+              </button>
             </div>
-          </>
+          </div>
         )}
       </main>
       <Footer />
