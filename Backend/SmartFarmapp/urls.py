@@ -8,4 +8,5 @@ router.register(r'cartview',CartViewSet,basename='cart')
 urlpatterns = [
     path('',include(router.urls)),
     path('predict/', RandomForestPrediction.as_view(), name='random_forest_prediction'), 
+    path('contact/',ContactView.as_view(),name='contact')
 ]
