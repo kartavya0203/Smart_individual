@@ -18,21 +18,25 @@ export const fetchCart = createAsyncThunk(
             Authorization: `Token ${getAuthToken()}`,
           },
         });
+        console.log("Fetched authenticated cart:", response.data);
         return response.data || [];
       } catch (err) {
+        console.error("Error fetching authenticated cart:", err);
         return rejectWithValue(err.response?.data || err.message);
       }
     } else {
       // Unauthenticated user
       const sessionCart = JSON.parse(localStorage.getItem('session_cart')) || [];
-      return sessionCart; // Return the session cart
+      console.log("Fetched session cart:", sessionCart);
+      return sessionCart;
     }
   }
 );
 
 export const addToCart = createAsyncThunk(
   "cart/addToCart",
-  async (item, { dispatch, rejectWithValue }) => {
+  async (item, { getState, rejectWithValue }) => {
+    console.log("Adding to cart:", item);
     if (getAuthToken()) {
       // Authenticated user
       try {
@@ -45,10 +49,11 @@ export const addToCart = createAsyncThunk(
             Authorization: `Token ${getAuthToken()}`,
           },
         });
-        dispatch(fetchCart());
+        console.log("Added to authenticated cart:", response.data);
         toast.success(`${item.product_name} has been added to your cart!`);
         return response.data;
       } catch (err) {
+        console.error("Error adding to authenticated cart:", err);
         return rejectWithValue(err.response?.data || err.message);
       }
     } else {
@@ -62,21 +67,22 @@ export const addToCart = createAsyncThunk(
         sessionCart.push({
           product_id: item.id,
           product_name: item.product_name,
-          product_price: item.price, // Make sure to add the price
+          product_price: item.price,
           quantity: item.quantity || 1,
         });
       }
 
       localStorage.setItem('session_cart', JSON.stringify(sessionCart));
+      console.log("Added to session cart:", sessionCart);
       toast.success(`${item.product_name} has been added to your session cart!`);
-      return sessionCart; // Return the updated session cart
+      return sessionCart;
     }
   }
 );
 
 export const removeFromCart = createAsyncThunk(
   "cart/removeFromCart",
-  async (id, { dispatch, rejectWithValue }) => {
+  async (id, { rejectWithValue }) => {
     if (getAuthToken()) {
       // Authenticated user
       try {
@@ -85,8 +91,12 @@ export const removeFromCart = createAsyncThunk(
             Authorization: `Token ${getAuthToken()}`,
           },
         });
-        dispatch(fetchCart()); // Refresh cart after removal
-        return id;
+        const response = await axios.get(API_BASE_URL, {
+          headers: {
+            Authorization: `Token ${getAuthToken()}`,
+          },
+        });
+        return response.data;
       } catch (err) {
         return rejectWithValue(err.response?.data || err.message);
       }
@@ -95,14 +105,14 @@ export const removeFromCart = createAsyncThunk(
       const sessionCart = JSON.parse(localStorage.getItem('session_cart')) || [];
       const updatedCart = sessionCart.filter(item => item.product_id !== id);
       localStorage.setItem('session_cart', JSON.stringify(updatedCart));
-      return id; // Return removed item id
+      return updatedCart;
     }
   }
 );
 
 export const clearCart = createAsyncThunk(
   "cart/clearCart",
-  async (_, { dispatch, rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     if (getAuthToken()) {
       // Authenticated user
       try {
@@ -111,14 +121,13 @@ export const clearCart = createAsyncThunk(
             Authorization: `Token ${getAuthToken()}`,
           },
         });
-        dispatch(fetchCart()); // Refresh cart after clearing
         return [];
       } catch (err) {
         return rejectWithValue(err.response?.data || err.message);
       }
     } else {
       // Unauthenticated user
-      localStorage.removeItem('session_cart'); // Clear session cart
+      localStorage.removeItem('session_cart');
       return [];
     }
   }
@@ -140,6 +149,7 @@ const cartSlice = createSlice({
       .addCase(fetchCart.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.items = action.payload;
+        console.log("fetchCart fulfilled, new state:", state);
       })
       .addCase(fetchCart.rejected, (state, action) => {
         state.status = "failed";
@@ -147,11 +157,12 @@ const cartSlice = createSlice({
       })
       .addCase(addToCart.fulfilled, (state, action) => {
         state.status = "succeeded";
-        // Update items if necessary (e.g., update local items state if adding to session cart)
+        state.items = action.payload;
+        console.log("addToCart fulfilled, new state:", state);
       })
       .addCase(removeFromCart.fulfilled, (state, action) => {
         state.status = "succeeded";
-        // Update items if necessary (e.g., remove item from local state)
+        state.items = action.payload;
       })
       .addCase(clearCart.fulfilled, (state) => {
         state.status = "succeeded";

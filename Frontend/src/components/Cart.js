@@ -7,6 +7,7 @@ import Footer from "./Footer";
 const Cart = () => {
   const dispatch = useDispatch();
   const { items: cartData, status, error } = useSelector((store) => store.cart);
+  const isAuthenticated = !!localStorage.getItem("auth_token");
 
   useEffect(() => {
     dispatch(fetchCart());
@@ -23,9 +24,18 @@ const Cart = () => {
   if (status === 'loading') return <div className="text-center">Loading your cart...</div>;
   if (status === 'failed') return <div className="text-center text-red-500">Error: {error}</div>;
 
-  const hasItems = cartData && Array.isArray(cartData.items) && cartData.items.length > 0;
+  let cartItems = [];
+  if (isAuthenticated) {
+    // For authenticated users, assuming the API returns an object with an 'items' array
+    cartItems = cartData.items || [];
+  } else {
+    // For unauthenticated users, cartData is directly the array of items
+    cartItems = cartData || [];
+  }
 
-  const totalCost = hasItems ? cartData.items.reduce((acc, item) => {
+  const hasItems = cartItems.length > 0;
+
+  const totalCost = hasItems ? cartItems.reduce((acc, item) => {
     return acc + (parseFloat(item.product_price) * item.quantity);
   }, 0) : 0;
 
@@ -49,8 +59,8 @@ const Cart = () => {
                 </tr>
               </thead>
               <tbody>
-                {cartData.items.map((cartItem) => (
-                  <tr key={cartItem.id} className="border-b">
+                {cartItems.map((cartItem) => (
+                  <tr key={isAuthenticated ? cartItem.id : cartItem.product_id} className="border-b">
                     <td className="py-2">{cartItem.product_name}</td>
                     <td className="py-2">{parseFloat(cartItem.product_price).toFixed(2)}</td>
                     <td className="py-2">{cartItem.quantity}</td>
@@ -59,7 +69,7 @@ const Cart = () => {
                     </td>
                     <td className="py-2 text-right">
                       <button
-                        onClick={() => deleteCartItem(cartItem.id)}
+                        onClick={() => deleteCartItem(isAuthenticated ? cartItem.id : cartItem.product_id)}
                         className="text-red-500 hover:text-red-600"
                       >
                         Remove
