@@ -7,11 +7,12 @@ from .serializers import (
     UserSerializer,
     ProductsSerializers,
     CartSerializer,
+    #CartItemSerializer,
     ContactSerializer,
 )
 from .models import Products, CartItem, Cart
 from .ml_models import predict
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny,IsAuthenticated
 
 class RandomForestPrediction(APIView):
     permission_classes = [AllowAny]
@@ -131,7 +132,7 @@ class CartViewSet(viewsets.ModelViewSet):
                         return Response(status=status.HTTP_204_NO_CONTENT)
                     cart_item.quantity = new_quantity
                     cart_item.save()
-                return Response(CartItemSerializer(cart_item).data, status=status.HTTP_200_OK)
+                return Response(cart_item.data, status=status.HTTP_200_OK)
             except (CartItem.DoesNotExist, Cart.DoesNotExist):
                 return Response({'message': 'Cart or item not found.'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -150,6 +151,7 @@ class CartViewSet(viewsets.ModelViewSet):
         return Response({'cart': session_cart}, status=status.HTTP_200_OK)
 
 class ContactView(APIView):
+    permission_classes=[IsAuthenticated]
     def post(self, request):
         serializer = ContactSerializer(data=request.data)
         if serializer.is_valid():

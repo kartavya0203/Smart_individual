@@ -11,23 +11,18 @@ export const fetchCart = createAsyncThunk(
   "cart/fetchCart",
   async (_, { rejectWithValue }) => {
     if (getAuthToken()) {
-      // Authenticated user
       try {
         const response = await axios.get(API_BASE_URL, {
           headers: {
             Authorization: `Token ${getAuthToken()}`,
           },
         });
-        console.log("Fetched authenticated cart:", response.data);
         return response.data || [];
       } catch (err) {
-        console.error("Error fetching authenticated cart:", err);
         return rejectWithValue(err.response?.data || err.message);
       }
     } else {
-      // Unauthenticated user
       const sessionCart = JSON.parse(localStorage.getItem('session_cart')) || [];
-      console.log("Fetched session cart:", sessionCart);
       return sessionCart;
     }
   }
@@ -35,10 +30,8 @@ export const fetchCart = createAsyncThunk(
 
 export const addToCart = createAsyncThunk(
   "cart/addToCart",
-  async (item, { getState, rejectWithValue }) => {
-    console.log("Adding to cart:", item);
+  async (item, { rejectWithValue }) => {
     if (getAuthToken()) {
-      // Authenticated user
       try {
         const payload = {
           product_id: item.id,
@@ -49,15 +42,12 @@ export const addToCart = createAsyncThunk(
             Authorization: `Token ${getAuthToken()}`,
           },
         });
-        console.log("Added to authenticated cart:", response.data);
         toast.success(`${item.product_name} has been added to your cart!`);
         return response.data;
       } catch (err) {
-        console.error("Error adding to authenticated cart:", err);
         return rejectWithValue(err.response?.data || err.message);
       }
     } else {
-      // Unauthenticated user
       const sessionCart = JSON.parse(localStorage.getItem('session_cart')) || [];
       const existingItem = sessionCart.find(i => i.product_id === item.id);
 
@@ -73,9 +63,38 @@ export const addToCart = createAsyncThunk(
       }
 
       localStorage.setItem('session_cart', JSON.stringify(sessionCart));
-      console.log("Added to session cart:", sessionCart);
       toast.success(`${item.product_name} has been added to your session cart!`);
       return sessionCart;
+    }
+  }
+);
+
+export const updateCartQuantity = createAsyncThunk(
+  "cart/updateCartQuantity",
+  async ({ id, quantity }, { rejectWithValue }) => {
+    if (getAuthToken()) {
+      try {
+        const response = await axios.patch(`${API_BASE_URL}${id}/`, { quantity }, {
+          headers: {
+            Authorization: `Token ${getAuthToken()}`,
+          },
+        });
+        return response.data;
+      } catch (err) {
+        return rejectWithValue(err.response?.data || err.message);
+      }
+    } else {
+      const sessionCart = JSON.parse(localStorage.getItem('session_cart')) || [];
+      const updatedCart = sessionCart.map(item => {
+        if (item.product_id === id) {
+          const newQuantity = Math.max(item.quantity + quantity, 0);
+          return { ...item, quantity: newQuantity };
+        }
+        return item;
+      }).filter(item => item.quantity > 0);
+
+      localStorage.setItem('session_cart', JSON.stringify(updatedCart));
+      return updatedCart;
     }
   }
 );
@@ -84,7 +103,6 @@ export const removeFromCart = createAsyncThunk(
   "cart/removeFromCart",
   async (id, { rejectWithValue }) => {
     if (getAuthToken()) {
-      // Authenticated user
       try {
         await axios.delete(`${API_BASE_URL}${id}/`, {
           headers: {
@@ -101,7 +119,6 @@ export const removeFromCart = createAsyncThunk(
         return rejectWithValue(err.response?.data || err.message);
       }
     } else {
-      // Unauthenticated user
       const sessionCart = JSON.parse(localStorage.getItem('session_cart')) || [];
       const updatedCart = sessionCart.filter(item => item.product_id !== id);
       localStorage.setItem('session_cart', JSON.stringify(updatedCart));
@@ -114,7 +131,6 @@ export const clearCart = createAsyncThunk(
   "cart/clearCart",
   async (_, { rejectWithValue }) => {
     if (getAuthToken()) {
-      // Authenticated user
       try {
         await axios.delete(`${API_BASE_URL}clear/`, {
           headers: {
@@ -126,7 +142,6 @@ export const clearCart = createAsyncThunk(
         return rejectWithValue(err.response?.data || err.message);
       }
     } else {
-      // Unauthenticated user
       localStorage.removeItem('session_cart');
       return [];
     }
@@ -149,7 +164,6 @@ const cartSlice = createSlice({
       .addCase(fetchCart.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.items = action.payload;
-        console.log("fetchCart fulfilled, new state:", state);
       })
       .addCase(fetchCart.rejected, (state, action) => {
         state.status = "failed";
@@ -158,7 +172,10 @@ const cartSlice = createSlice({
       .addCase(addToCart.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.items = action.payload;
-        console.log("addToCart fulfilled, new state:", state);
+      })
+      .addCase(updateCartQuantity.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.items = action.payload; // Update state immediately after successful update
       })
       .addCase(removeFromCart.fulfilled, (state, action) => {
         state.status = "succeeded";

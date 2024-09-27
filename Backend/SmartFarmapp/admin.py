@@ -12,6 +12,10 @@ class CartAdmin(admin.ModelAdmin):
     inlines = [CartItemInline]
     list_display = ('user',)  # Customize the list display
 
+class ContactAdmin(admin.ModelAdmin):
+    list_display=('email',)
+
 admin.site.register(Products,ProductDesc)
 admin.site.register(Cart, CartAdmin)
 admin.site.register(CartItem)
+admin.site.register(Contact,ContactAdmin)

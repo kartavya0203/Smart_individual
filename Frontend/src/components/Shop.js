@@ -61,8 +61,8 @@ const Shop = () => {
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-grow">
-        <div className="bg-gradient-to-r from-purple-600 to-indigo-600 py-20">
-          <h1 className="text-5xl md:text-6xl text-center font-extrabold text-white drop-shadow-lg">
+        <div className="bg-gradient-to-r from-green-400 to-yellow-300 py-20">
+          <h1 className="text-5xl md:text-6xl text-center font-extrabold text-white drop-shadow-lg mt-10">
             Our Products
           </h1>
         </div>
