@@ -97,11 +97,6 @@ Agro Predict was developed to assist farmers with crop recommendations based on 
 2. **Crop Predictions**: After submitting the form, users receive a crop recommendation based on the input data.
 3. **Cart Functionality**: Users can add farming products to their cart, modify quantities, and manage their selections, although payment functionality is pending integration.
 
-```
-
 ## License
 This project is open-source and available under the MIT License.
 
----
-
-This updated version includes instructions on how to set up and start both the backend (Django) and frontend (React).
